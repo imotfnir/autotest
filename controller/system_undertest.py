@@ -1,6 +1,6 @@
 from common.type import ConsoleIp, SshIp, Account, SystemInfo
 from common.base import Decoding
-from autotestlib.session import Console, X86Terminal, BmcTerminal
+from controller.session import Console, LinuxTerminal, BmcTerminal
 
 
 class SystemUnderTest():
@@ -9,7 +9,7 @@ class SystemUnderTest():
         self.x86_ip: SshIp = None
         self.bmc_ip: SshIp = None
         self.console: Console = None
-        self.x86: X86Terminal = None
+        self.x86: LinuxTerminal = None
         self.bmc: BmcTerminal = None
         self.config: dict = None
         self.system_info: SystemInfo = None
@@ -60,7 +60,7 @@ class SystemUnderTest():
             SshIp(self.x86_ip.ip),
             "root",
             "ufispace")
-        self.x86 = X86Terminal(account)
+        self.x86 = LinuxTerminal(account)
         self.x86.connect()
 
     def connext_bmc(self) -> BmcTerminal:
@@ -87,7 +87,7 @@ class SystemUnderTest():
         self.connext_bmc()
 
     def update_config(self) -> None:
-        self.config = Decoding.decode_config("autotestlib/config.json")
+        self.config = Decoding.decode_config("common/config.json")
         self.platform = self.config["platform"]
         self.sku = self.config["sku"]
         self.console_ip = ConsoleIp(

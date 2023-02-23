@@ -1,7 +1,7 @@
 import pytest
 
 import common.type as Type
-import autotestlib.power_switch as Pw
+import controller.power_switch as Pw
 
 
 console = Type.ConsoleIp(ip="192.168.162.2", port=5116)

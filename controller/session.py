@@ -4,12 +4,12 @@ import abc
 import paramiko
 import pexpect
 
-import autotestlib.action as Action
+import controller.cmd_controller as Command
 from common.type import Account, BiosVersion, SshIp
 from common.base import print_err
 
 
-class Session():
+class Session(abc.ABC):
     def __init__(self, account: Account) -> None:
         self.account = account
         self.timeout = 30
@@ -50,7 +50,7 @@ class Terminal(Session):
         pass
 
 
-class X86Terminal(Terminal, Action.X86Action):
+class LinuxTerminal(Terminal):
     def connect(self) -> None:
         try:
             self.process = paramiko.SSHClient()
@@ -84,7 +84,7 @@ class X86Terminal(Terminal, Action.X86Action):
         return ver
 
 
-class BmcTerminal(Terminal, Action.BmcAction):
+class BmcTerminal(Terminal):
     pass
 
 

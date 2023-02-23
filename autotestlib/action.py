@@ -1,6 +1,6 @@
 import abc
 
-import autotestlib.type as Type
+import common.type as Type
 
 
 class X86Action:

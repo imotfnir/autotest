@@ -1,6 +1,6 @@
-import autotestlib.type as Type
+import common.type as Type
 import autotestlib.session as Session
-import autotestlib.base as Base
+import common.base as Base
 
 
 class SystemUnderTest():

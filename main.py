@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import autotestlib.base as Base
+import common.base as Base
 import autotestlib.session as s
-import autotestlib.type as Type
+import common.type as Type
 import autotestlib.system_undertest as Sut
 
 import pexpect

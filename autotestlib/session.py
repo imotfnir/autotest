@@ -4,9 +4,9 @@ import abc
 import paramiko
 import pexpect
 
-import autotestlib.type as Type
+import common.type as Type
 import autotestlib.action as Action
-from autotestlib.base import print_err
+from common.base import print_err
 
 
 class Session():

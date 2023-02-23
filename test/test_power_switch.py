@@ -1,6 +1,6 @@
 import pytest
 
-import autotestlib.type as Type
+import common.type as Type
 import autotestlib.power_switch as Pw
 
 

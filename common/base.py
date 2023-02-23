@@ -2,7 +2,7 @@ from types import SimpleNamespace
 from sys import stderr
 import json
 
-import autotestlib.type as Type
+import common.type as Type
 
 
 def print_err(*args, **kwargs):

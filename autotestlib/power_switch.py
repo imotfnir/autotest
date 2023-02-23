@@ -1,4 +1,4 @@
-import autotestlib.type as Type
+import common.type as Type
 
 
 class PowerSwitch():

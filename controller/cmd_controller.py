@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from common.type import BiosVersion, CpuCpldVersion, BmcVersion, Sku, Platform
 
 
-class ExternalCommandController(ABC):
+class CommandController(ABC):
     @property
     @abstractmethod
     def command(self) -> str:
@@ -34,7 +34,7 @@ class ExternalCommandController(ABC):
         pass
 
 
-class IternalCommandController(ExternalCommandController):
+class AdvanceCommandController(CommandController):
     @property
     @abstractmethod
     def exec_time(self) -> float:
@@ -49,19 +49,19 @@ class IternalCommandController(ExternalCommandController):
 # ToDo
 
 
-class TerminalCommandController(IternalCommandController):
+class TerminalCommandController(AdvanceCommandController):
     def __init__(self) -> None:
         pass
 
 # ToDo
 
 
-class ConsoleCommandController(ExternalCommandController):
+class ConsoleCommandController(CommandController):
     def __init__(self) -> None:
         pass
 
 
-class TerminalCommonAction:
+class Action:
     def __init__(self) -> None:
         self.controller = TerminalCommandController()
 
@@ -75,16 +75,12 @@ class TerminalCommonAction:
             return
         self._controller = controller
 
-    @abstractmethod
-    def get_os_version(self) -> str:
-        pass
 
-
-class OnieAction(TerminalCommonAction):
+class OnieAction(Action):
     pass
 
 
-class LinuxAction(TerminalCommonAction):
+class LinuxAction(Action):
     def lspci(self) -> str:
         pass
 
@@ -101,6 +97,9 @@ class LinuxAction(TerminalCommonAction):
         pass
 
     def get_cpu_code_name(self) -> str:
+        pass
+
+    def get_os_version(self) -> str:
         pass
 
 

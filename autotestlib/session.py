@@ -4,23 +4,23 @@ import abc
 import paramiko
 import pexpect
 
-import common.type as Type
 import autotestlib.action as Action
+from common.type import Account, BiosVersion, SshIp
 from common.base import print_err
 
 
 class Session():
-    def __init__(self, account: Type.Account) -> None:
+    def __init__(self, account: Account) -> None:
         self.account = account
         self.timeout = 30
         self.process = None
 
     @property
-    def account(self) -> Type.Account:
+    def account(self) -> Account:
         return self._account
 
     @account.setter
-    def account(self, account: Type.Account) -> None:
+    def account(self, account: Account) -> None:
         self._account = account
 
     @property
@@ -74,11 +74,11 @@ class X86Terminal(Terminal, Action.X86Action):
             print_err("lspci fail")
             raise
 
-    def get_bios_version(self) -> Type.BiosVersion:
+    def get_bios_version(self) -> BiosVersion:
         try:
             _, stdout, _ = self.process.exec_command(
                 "dmidecode -s bios-version")
-            ver = Type.BiosVersion(str(stdout.read(), encoding='UTF-8'))
+            ver = BiosVersion(str(stdout.read(), encoding='UTF-8'))
         except Exception:
             print_err("get BIOS version fail")
         return ver
@@ -89,7 +89,7 @@ class BmcTerminal(Terminal, Action.BmcAction):
 
 
 class Console(Session):
-    def __init__(self, account: Type.Account) -> None:
+    def __init__(self, account: Account) -> None:
         super().__init__(account=account)
         self.delay: float = 0.2
         self._prompt = "root@ubuntu:~#"
@@ -171,14 +171,14 @@ class Console(Session):
             case _:
                 return False
 
-    def get_ssh_ip(self) -> Type.SshIp:
+    def get_ssh_ip(self) -> SshIp:
         self._flush_buffer()
         self.process.send("ip r\r")
         self.process.expect(
             ["(?<=link src )(\\d{1,3}\\.){3}\\d{1,3}", pexpect.EOF, pexpect.TIMEOUT], timeout=5)
-        return Type.SshIp(str(self.process.after, encoding='UTF-8'))
+        return SshIp(str(self.process.after, encoding='UTF-8'))
 
-    def get_bmc_ip(self) -> Type.SshIp:
+    def get_bmc_ip(self) -> SshIp:
         self._flush_buffer()
         self.process.send("ipmitool lan print\r")
         self.process.expect(
@@ -186,7 +186,7 @@ class Console(Session):
         ip = re.search(
             "(\\d{1,3}\\.){3}\\d{1,3}", str(
                 self.process.after, encoding='UTF-8')).group(0)
-        return Type.SshIp(ip)
+        return SshIp(ip)
 
 
 if __name__ == "__main__":

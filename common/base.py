@@ -1,8 +1,5 @@
-from types import SimpleNamespace
 from sys import stderr
 import json
-
-import common.type as Type
 
 
 def print_err(*args, **kwargs):

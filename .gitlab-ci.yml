@@ -2,8 +2,6 @@ variables:
   TEST_FILE: "./.githooks/pre-commit"
 
 stages:
-  - shell_test
-  - python_test
 
 shell_test:
   stage: shell_test

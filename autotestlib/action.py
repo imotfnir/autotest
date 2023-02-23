@@ -1,6 +1,6 @@
 import abc
 
-import common.type as Type
+from common.type import BiosVersion, CpuCpldVersion, BmcVersion, Sku, Platform
 
 
 class X86Action:
@@ -9,15 +9,15 @@ class X86Action:
         pass
 
     @abc.abstractmethod
-    def get_bios_version(self) -> Type.BiosVersion:
+    def get_bios_version(self) -> BiosVersion:
         pass
 
     @abc.abstractmethod
-    def get_cpu_cpld_version(self) -> Type.CpuCpldVersion:
+    def get_cpu_cpld_version(self) -> CpuCpldVersion:
         pass
 
     @abc.abstractmethod
-    def get_bmc_version(self) -> Type.BmcVersion:
+    def get_bmc_version(self) -> BmcVersion:
         pass
 
     @abc.abstractmethod
@@ -25,11 +25,11 @@ class X86Action:
         pass
 
     @abc.abstractmethod
-    def get_sys_sku(self) -> Type.Sku:
+    def get_sys_sku(self) -> Sku:
         pass
 
     @abc.abstractmethod
-    def get_platform(self) -> Type.Platform:
+    def get_platform(self) -> Platform:
         pass
 
     @abc.abstractmethod

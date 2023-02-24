@@ -10,10 +10,11 @@ from common.base import print_err
 
 
 class Session(abc.ABC):
-    def __init__(self, account: Account) -> None:
+    def __init__(self, account: Account, timeout: float = 15) -> None:
         self.account = account
-        self.timeout = 30
+        self.timeout = timeout
         self.process = None
+        self.is_connect = False
 
     @property
     def account(self) -> Account:
@@ -34,10 +35,15 @@ class Session(abc.ABC):
             raise ValueError("Timeout must >= 0")
         self._timeout = timeout
 
-    def get_status(self) -> str:
-        if self.connect is None:
-            return "Disconnect"
-        return "Connected"
+    @property
+    def is_connect(self) -> bool:
+        if self.process is None:
+            self._is_connect = False
+        return self._is_connect
+
+    @is_connect.setter
+    def is_connect(self, status: bool) -> None:
+        self._is_connect = status
 
     @abc.abstractmethod
     def connect(self) -> None:
@@ -61,7 +67,9 @@ class LinuxTerminal(Terminal):
                 self.account.username,
                 self.account.password,
                 timeout=self.timeout)
+            self.is_connect = True
         except Exception:
+            self.is_connect = False
             print_err("X86 ssh connect fail")
             raise
 
@@ -105,8 +113,10 @@ class Console(Session):
                                           self.account.username,
                                           self.account.ipv4.ip,
                                           '-p',
-                                          str(self.account.ipv4.port)])
+                                          str(self.account.ipv4.port)],
+                                         timeout=self.timeout)
         except Exception:
+            self.is_connect = False
             print_err("Terminal server login fail")
             raise
 
@@ -114,8 +124,9 @@ class Console(Session):
             case 0:
                 self.process.sendline(self.account.password)
                 print('Terminal server Enter password')
-                self._is_connect_success()
+                self.is_connect = self._is_connect_success()
             case _:
+                self.is_connect = False
                 print_err("Terminal server login timeout")
         return
 

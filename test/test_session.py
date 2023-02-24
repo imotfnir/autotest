@@ -1,0 +1,47 @@
+import socket
+import re
+
+import pytest
+
+from common.type import ConsoleIp, Account, SshIp
+import controller.session as ss
+
+
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+
+is_intranet: bool = bool(re.search(r"10.58.\d{1,3}.\d{1,3}", get_ip_address()))
+
+
+stub_console_ip = ConsoleIp("192.168.162.2", 5102)
+stub_ssh_ip = SshIp("192.168.165.115")
+stub_ssh_account = Account(stub_ssh_ip, "root", "ufispace")
+stub_console_account = Account(stub_console_ip, "administrator", "ufispace")
+stub_account_fail = Account(stub_console_ip, "xxx", "xxx")
+
+
+@pytest.mark.skipif(not is_intranet,
+                    reason="skip the test if ip address is not intranet")
+def test_console_connect() -> None:
+    sut = ss.Console(stub_console_account)
+    assert sut.is_connect is False
+    sut.connect()
+    assert sut.is_connect is True
+
+    sut_fail = ss.Console(stub_account_fail)
+    assert sut_fail.is_connect is False
+    sut_fail.timeout = 2
+    sut_fail.connect()
+    assert sut_fail.is_connect is False
+
+
+@pytest.mark.skipif(not is_intranet,
+                    reason="skip the test if ip address is not intranet")
+def test_terminal_connect() -> None:
+    sut = ss.LinuxTerminal(stub_ssh_account)
+    assert sut.is_connect is False
+    sut.connect()
+    assert sut.is_connect is True

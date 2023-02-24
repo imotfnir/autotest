@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from common.type import BiosVersion, CpuCpldVersion, BmcVersion, Sku, Platform
 
 
-class CommandController(ABC):
+class ICommandController(ABC):
     @property
     @abstractmethod
     def command(self) -> str:
@@ -34,7 +34,7 @@ class CommandController(ABC):
         pass
 
 
-class AdvanceCommandController(CommandController):
+class IAdvanceCommandController(ICommandController):
     @property
     @abstractmethod
     def exec_time(self) -> float:
@@ -49,14 +49,14 @@ class AdvanceCommandController(CommandController):
 # ToDo
 
 
-class TerminalCommandController(AdvanceCommandController):
+class TerminalCommandController(IAdvanceCommandController):
     def __init__(self) -> None:
         pass
 
 # ToDo
 
 
-class ConsoleCommandController(CommandController):
+class ConsoleCommandController(ICommandController):
     def __init__(self) -> None:
         pass
 

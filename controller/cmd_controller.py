@@ -1,86 +1,12 @@
-from abc import ABC, abstractmethod
-
-from common.type import BiosVersion, CpuCpldVersion, BmcVersion, Sku, Platform
-
-
-class ICommandController(ABC):
-    @property
-    @abstractmethod
-    def command(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def stdin(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def stdout(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def stderr(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def timeout(self) -> float:
-        pass
-
-    @abstractmethod
-    def exec_command(self, command: str) -> bool:
-        pass
+from common.type import BiosVersion, CpuCpldVersion, Sku, Platform
+from controller.session import Session
 
 
-class IAdvanceCommandController(ICommandController):
-    @property
-    @abstractmethod
-    def exec_time(self) -> float:
-        pass
+class CommandSet:
+    def __init__(self, session: Session) -> None:
+        self.session = session
+        self.exec_command = self.session.exec_command
 
-    @property
-    @abstractmethod
-    def exit_code(self) -> int:
-        pass
-
-
-# ToDo
-
-
-class TerminalCommandController(IAdvanceCommandController):
-    def __init__(self) -> None:
-        pass
-
-# ToDo
-
-
-class ConsoleCommandController(ICommandController):
-    def __init__(self) -> None:
-        pass
-
-
-class Action:
-    def __init__(self) -> None:
-        self.controller = TerminalCommandController()
-
-    @property
-    def controller(self) -> TerminalCommandController:
-        return self._controller
-
-    @controller.setter
-    def controller(self, controller: TerminalCommandController) -> None:
-        if self.controller is not None:
-            return
-        self._controller = controller
-
-
-class OnieAction(Action):
-    pass
-
-
-class LinuxAction(Action):
     def lspci(self) -> str:
         pass
 
@@ -103,7 +29,5 @@ class LinuxAction(Action):
         pass
 
 
-class BmcAction:
-    @abstractmethod
-    def get_bmc_version(self) -> BmcVersion:
-        pass
+class TestPatternController:
+    pass

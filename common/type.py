@@ -65,6 +65,15 @@ class Account:
         self.password = password
 
 
+class CommandResult:
+    def __init__(self) -> None:
+        self.command: str = None
+        self.stdin: str = None
+        self.stdout: str = None
+        self.stderr: str = None
+        self.exec_time: float = None
+
+
 class Semver:
     def __init__(self) -> None:
         self.major: int = None

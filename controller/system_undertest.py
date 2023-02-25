@@ -1,6 +1,6 @@
 from common.type import ConsoleIp, SshIp, Account, SystemInfo
 from common.base import Decoding
-from controller.session import Console, LinuxTerminal, BmcTerminal
+from controller.session import Console, Terminal, BmcTerminal
 
 
 class SystemUnderTest():
@@ -9,8 +9,8 @@ class SystemUnderTest():
         self.x86_ip: SshIp = None
         self.bmc_ip: SshIp = None
         self.console: Console = None
-        self.x86: LinuxTerminal = None
-        self.bmc: BmcTerminal = None
+        self.x86: Terminal = None
+        self.bmc: Terminal = None
         self.config: dict = None
         self.system_info: SystemInfo = None
         self.update_config()
@@ -60,7 +60,7 @@ class SystemUnderTest():
             SshIp(self.x86_ip.ip),
             "root",
             "ufispace")
-        self.x86 = LinuxTerminal(account)
+        self.x86 = Terminal(account)
         self.x86.connect()
 
     def connext_bmc(self) -> BmcTerminal:

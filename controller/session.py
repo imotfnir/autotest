@@ -1,20 +1,20 @@
 import re
-import abc
+import time
+from abc import ABC, abstractmethod
 
 import paramiko
 import pexpect
 
-import controller.cmd_controller as Command
-from common.type import Account, BiosVersion, SshIp
+from common.type import Account, SshIp, CommandResult
 from common.base import print_err
 
 
-class Session(abc.ABC):
+class Session(ABC):
     def __init__(self, account: Account, timeout: float = 15) -> None:
         self.account = account
         self.timeout = timeout
         self.process = None
-        self.is_connect = False
+        self.is_connect: bool = False
 
     @property
     def account(self) -> Account:
@@ -45,18 +45,28 @@ class Session(abc.ABC):
     def is_connect(self, status: bool) -> None:
         self._is_connect = status
 
-    @abc.abstractmethod
+    @property
+    def process(self) -> bool:
+        return self._process
+
+    @process.setter
+    def process(self, status: bool) -> None:
+        self._process = status
+
+    @abstractmethod
     def connect(self) -> None:
+        pass
+
+    @abstractmethod
+    def disconnect(self) -> None:
+        pass
+
+    @abstractmethod
+    def exec_command(self, command: str, *args, **kwargs) -> CommandResult:
         pass
 
 
 class Terminal(Session):
-    @abc.abstractmethod
-    def connect(self) -> None:
-        pass
-
-
-class LinuxTerminal(Terminal):
     def connect(self) -> None:
         try:
             self.process = paramiko.SSHClient()
@@ -73,33 +83,30 @@ class LinuxTerminal(Terminal):
             print_err("X86 ssh connect fail")
             raise
 
-    # ToDo: rewrite action fucntion by DIP
-    def lspci(self) -> str:
+    def disconnect(self) -> None:
+        self.process.close()
+
+    def exec_command(self, command: str, *args, **kwargs) -> CommandResult:
+        result = CommandResult()
+        result.command = command
+        start = time.time()
         try:
-            stdin, stdout, stderr = self.process.exec_command("lspci")
-            return str(stdout.read(), encoding='UTF-8')
+            result.stdin, result.stdout, result.stderr = self.process.exec_command(
+                command, args, kwargs)
         except Exception:
-            print_err("lspci fail")
+            print_err(f"fail exec_command: {command}")
             raise
-
-    def get_bios_version(self) -> BiosVersion:
-        try:
-            _, stdout, _ = self.process.exec_command(
-                "dmidecode -s bios-version")
-            ver = BiosVersion(str(stdout.read(), encoding='UTF-8'))
-        except Exception:
-            print_err("get BIOS version fail")
-        return ver
-
-
-class BmcTerminal(Terminal):
-    pass
+        end = time.time()
+        result.stdout = str(result.stdout.read(), encoding='UTF-8')
+        result.stdin = str(result.stdin.read(), encoding='UTF-8')
+        result.stderr = str(result.stderr.read(), encoding='UTF-8')
+        result.exec_time = end - start
+        return result
 
 
 class Console(Session):
-    def __init__(self, account: Account) -> None:
-        super().__init__(account=account)
-        self.delay: float = 0.2
+    def __init__(self, account: Account, timeout: float = 15) -> None:
+        super().__init__(account, timeout)
         self._prompt = "root@ubuntu:~#"
 
     def connect(self) -> None:

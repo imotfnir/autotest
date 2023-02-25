@@ -41,7 +41,9 @@ def test_console_connect() -> None:
 @pytest.mark.skipif(not is_intranet,
                     reason="skip the test if ip address is not intranet")
 def test_terminal_connect() -> None:
-    sut = ss.LinuxTerminal(stub_ssh_account)
+    sut = ss.Terminal(stub_ssh_account)
     assert sut.is_connect is False
     sut.connect()
     assert sut.is_connect is True
+
+# ToDo: Session.Terminal test

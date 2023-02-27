@@ -180,6 +180,22 @@ class Console(Session):
                 print('Login failed')
                 return
 
+    def send(self, data: str) -> None:
+        self._flush_buffer()
+        self.process.send(data)
+        return
+
+    def exec_command(self, command: str, *args, **kwargs) -> CommandResult:
+        self._flush_buffer()
+        self.process.send(command + "\r")
+        match self.process.expect([self._prompt, pexpect.EOF, pexpect.TIMEOUT], timeout=self.timeout):
+            case 0:
+                return str(self.process.after, encoding='UTF-8')
+            case 1:
+                raise ConnectionError
+            case 2:
+                raise TimeoutError
+
     def is_hardware_error(self) -> bool:
         self._flush_buffer()
         self.process.send("dmesg | grep -i \"hardware error\"\r")

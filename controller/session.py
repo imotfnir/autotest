@@ -146,6 +146,10 @@ class Console(Session):
                 print_err("Terminal server login timeout")
                 return False
 
+    def disconnect(self) -> None:
+        self.process.expect(pexpect.EOF)
+        self.process.close()
+
     def _flush_buffer(self) -> None:
         if self.process.before:
             self.process.expect(r'.+')

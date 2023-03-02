@@ -155,6 +155,7 @@ class Console(Session):
             self.process.expect(r'.+')
         return
 
+# ToDo: Move to command set
     def login(self) -> None:
         self._flush_buffer()
         self.process.send("\r")
@@ -191,15 +192,21 @@ class Console(Session):
 
     def exec_command(self, command: str, *args, **kwargs) -> CommandResult:
         self._flush_buffer()
+        result = CommandResult(command)
+        start = time.time()
         self.process.send(command + "\r")
         match self.process.expect([self._prompt, pexpect.EOF, pexpect.TIMEOUT], timeout=self.timeout):
             case 0:
-                return str(self.process.after, encoding='UTF-8')
+                result.stdout = str(self.process.before, encoding='UTF-8')
             case 1:
                 raise ConnectionError
             case 2:
                 raise TimeoutError
+        end = time.time()
+        result.exec_time = end - start
+        return result
 
+# ToDo: Move to command set
     def is_hardware_error(self) -> bool:
         self._flush_buffer()
         self.process.send("dmesg | grep -i \"hardware error\"\r")
@@ -209,6 +216,7 @@ class Console(Session):
             case _:
                 return False
 
+# ToDo: Move to command set
     def get_ssh_ip(self) -> SshIp:
         self._flush_buffer()
         self.process.send("ip r\r")
@@ -216,6 +224,7 @@ class Console(Session):
             ["(?<=link src )(\\d{1,3}\\.){3}\\d{1,3}", pexpect.EOF, pexpect.TIMEOUT], timeout=5)
         return SshIp(str(self.process.after, encoding='UTF-8'))
 
+# ToDo: Move to command set
     def get_bmc_ip(self) -> SshIp:
         self._flush_buffer()
         self.process.send("ipmitool lan print\r")

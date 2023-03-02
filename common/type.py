@@ -66,12 +66,18 @@ class Account:
 
 
 class CommandResult:
-    def __init__(self) -> None:
-        self.command: str = None
+    def __init__(self, command: str = None) -> None:
+        self.command: str = command
         self.stdin: str = None
         self.stdout: str = None
         self.stderr: str = None
         self.exec_time: float = None
+
+    def __str__(self) -> str:
+        result: str = ''
+        for attr, value in vars(self).items():
+            result += f"{attr}: {value}\n"
+        return result
 
 
 class Semver:

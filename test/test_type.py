@@ -1,3 +1,5 @@
+import re
+
 import pytest
 import common.type as Type
 
@@ -105,6 +107,19 @@ def test_ssh_exception() -> None:
         ssh_obj.port = 23
     with pytest.raises(ValueError):
         ssh_obj.port = 21
+    return
+
+
+def test_command_result_print() -> None:
+    sut = Type.CommandResult('test_command')
+    sut.stdout = "this is stdout"
+    sut.exec_time = 0.123
+    match = re.search(pattern="test_command", string=str(sut))
+    assert match is not None
+    match = re.search(pattern="stdout: this is stdout", string=str(sut))
+    assert match is not None
+    match = re.search(pattern="nothing", string=str(sut))
+    assert match is None
     return
 
 

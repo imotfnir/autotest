@@ -105,7 +105,7 @@ class Terminal(Session):
 
 
 class Console(Session):
-    def __init__(self, account: Account, timeout: float = 15) -> None:
+    def __init__(self, account: Account = None, timeout: float = 15) -> None:
         super().__init__(account, timeout)
         self._prompt = "root@ubuntu:~#"
 
